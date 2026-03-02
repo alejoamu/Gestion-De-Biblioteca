@@ -1,0 +1,70 @@
+{
+  "realm": "biblioteca",
+  "enabled": true,
+  "sslRequired": "external",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "editUsernameAllowed": false,
+  "bruteForceProtected": false,
+  "roles": {
+    "realm": [
+      { "name": "ADMIN", "description": "Administrador del sistema" },
+      { "name": "BIBLIOTECARIO", "description": "Gestiona préstamos y catálogo" },
+      { "name": "LECTOR", "description": "Usuario lector" }
+    ]
+  },
+  "defaultRoles": ["LECTOR"],
+  "clients": [
+    {
+      "clientId": "biblioteca-app",
+      "name": "Biblioteca App",
+      "enabled": true,
+      "publicClient": true,
+      "directAccessGrantsEnabled": true,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": ["http://localhost:8081/*", "http://localhost:8082/*", "http://localhost:8083/*", "http://localhost:8084/*"],
+      "webOrigins": ["+"],
+      "protocol": "openid-connect",
+      "fullScopeAllowed": true
+    }
+  ],
+  "users": [
+    {
+      "username": "admin",
+      "enabled": true,
+      "email": "admin@biblioteca.com",
+      "firstName": "Admin",
+      "lastName": "Sistema",
+      "realmRoles": ["ADMIN", "BIBLIOTECARIO", "LECTOR"],
+      "credentials": [
+        { "type": "password", "value": "admin", "temporary": false }
+      ]
+    },
+    {
+      "username": "bibliotecario",
+      "enabled": true,
+      "email": "biblio@biblioteca.com",
+      "firstName": "Biblio",
+      "lastName": "Tecario",
+      "realmRoles": ["BIBLIOTECARIO", "LECTOR"],
+      "credentials": [
+        { "type": "password", "value": "bibliotecario", "temporary": false }
+      ]
+    },
+    {
+      "username": "lector",
+      "enabled": true,
+      "email": "lector@biblioteca.com",
+      "firstName": "Lector",
+      "lastName": "Usuario",
+      "realmRoles": ["LECTOR"],
+      "credentials": [
+        { "type": "password", "value": "lector", "temporary": false }
+      ]
+    }
+  ]
+}

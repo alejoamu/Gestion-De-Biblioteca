@@ -46,6 +46,30 @@ El realm **biblioteca** se importa automáticamente (roles, cliente `biblioteca-
    **Windows:** `bin\kc.bat start-dev`
 3. Abre http://localhost:8080, inicia sesión (admin / admin) y crea el realm **biblioteca** siguiendo [docs/KEYCLOAK-SETUP.md](docs/KEYCLOAK-SETUP.md) (realm, cliente, roles, usuarios).
 
+#### Pantallas clave de configuración en Keycloak
+
+- **1. Gestión y creación de realms**
+
+  ![Gestión de realms en Keycloak](docs/realm.png)
+
+- **2. Configuración de clientes para los microservicios**
+
+  ![Configuración de clientes en Keycloak](docs/Clientes.png)
+
+- **3. Definición de roles del realm**
+
+  ![Roles del realm biblioteca](docs/roles.png)
+
+- **4. Usuarios y asignación de roles**
+
+  ![Usuarios del realm biblioteca](docs/users.png)
+
+- **5. Autenticación y credenciales en la consola**
+
+  ![Pantalla de autenticación en Keycloak](docs/authentication.png)
+
+  ![Credenciales y roles del usuario bibliotecario](docs/credenciales.png)
+
 En ambos casos, los microservicios se ejecutan igual con Maven.
 
 ## 2. Ejecutar los microservicios

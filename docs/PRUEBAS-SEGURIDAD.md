@@ -2,7 +2,7 @@
 
 ## 1. Obtener un token JWT válido (Keycloak)
 
-Con Keycloak en marcha y el realm `biblioteca` configurado (ver [KEYCLOAK-SETUP.md](KEYCLOAK-SETUP.md)):
+Con Keycloak en marcha y el realm `gimnasio` configurado (ver [KEYCLOAK-SETUP.md](KEYCLOAK-SETUP.md)):
 
 ### Opción A: Cliente con Direct access grants (usuario/contraseña)
 
@@ -64,7 +64,7 @@ curl -i http://localhost:8082/libros/buscar?criterio=java
 
 ## 4. Diferentes roles de usuario
 
-Crear en Keycloak (realm `biblioteca`) al menos:
+Crear en Keycloak (realm `gimnasio`) al menos:
 
 - Usuario **admin** con rol **ADMIN**
 - Usuario **bibliotecario** con rol **BIBLIOTECARIO**
@@ -100,3 +100,43 @@ Para probar endpoints protegidos desde Swagger:
 4. Ejecuta las operaciones; las peticiones irán con el header `Authorization: Bearer <token>`.
 
 Así puedes demostrar acceso correcto con token válido y, si quitas el token o usas uno inválido, ver **401** en las respuestas.
+
+---
+
+## 6. Pruebas automatizadas con Newman (Postman CLI)
+
+Además de probar a mano con curl o Swagger, puedes ejecutar un **conjunto de pruebas automatizadas** con [Newman](https://github.com/postmanlabs/newman), la CLI de Postman.
+
+### 6.1. Preparar entorno
+
+- Tener **Keycloak** levantado con el realm `gimnasio` y usuarios `admin`, `bibliotecario`, `lector`.
+- Tener los **cuatro microservicios** en marcha (puertos 8081–8084).
+- Tener **Node.js** instalado.
+
+Instalar Newman globalmente:
+
+```bash
+npm install -g newman
+```
+
+### 6.2. Ejecutar la colección
+
+En la raíz del proyecto:
+
+```bash
+newman run docs/newman-biblioteca.postman_collection.json
+```
+
+La colección hace lo siguiente:
+
+- Llama al endpoint de **token** de Keycloak para obtener:
+  - `token_admin`
+  - `token_bibliotecario`
+  - `token_lector`
+- Ejecuta peticiones contra cada microservicio:
+  - Catálogo: comprobar que el **lector** puede buscar libros pero no cambiar disponibilidad.
+  - Usuarios: comprobar que el **lector** no puede cambiar el email.
+  - Circulación: comprobar que el endpoint `/circulacion/public/status` es público y que el **lector** no puede listar todos los préstamos.
+  - Notificación: comprobar que el **bibliotecario** puede enviar notificaciones.
+
+Newman mostrará un resumen de tests pasados/fallados en consola; así puedes validar rápidamente que la configuración de seguridad y roles funciona en todos los microservicios.

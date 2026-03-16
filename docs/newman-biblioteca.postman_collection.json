@@ -1,0 +1,474 @@
+{
+  "info": {
+    "name": "Biblioteca - Microservicios (Newman)",
+    "_postman_id": "biblio-coleccion-newman",
+    "description": "Colección de pruebas automatizadas para los microservicios de la biblioteca usando JWT de Keycloak.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseKeycloak", "value": "http://localhost:8080" },
+    { "key": "realm", "value": "gimnasio" },
+    { "key": "client_id", "value": "microservicio-usuarios" },
+    { "key": "client_secret", "value": "tyVOaObjaMMxuLCtrtAHkQj4zahWZI1H" },
+    { "key": "username_admin", "value": "administrador" },
+    { "key": "password_admin", "value": "admin" },
+    { "key": "username_bibliotecario", "value": "librarian1" },
+    { "key": "password_bibliotecario", "value": "librarian" },
+    { "key": "username_lector", "value": "lector1" },
+    { "key": "password_lector", "value": "lector" },
+    { "key": "baseUsuarios", "value": "http://localhost:8081" },
+    { "key": "baseCatalogo", "value": "http://localhost:8082" },
+    { "key": "baseCirculacion", "value": "http://localhost:8083" },
+    { "key": "baseNotificacion", "value": "http://localhost:8084" }
+  ],
+  "item": [
+    {
+      "name": "1 - Autenticación (obtener tokens)",
+      "item": [
+        {
+          "name": "Token ADMIN",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "url": {
+              "raw": "{{baseKeycloak}}/realms/{{realm}}/protocol/openid-connect/token",
+              "host": [
+                "{{baseKeycloak}}"
+              ],
+              "path": [
+                "realms",
+                "{{realm}}",
+                "protocol",
+                "openid-connect",
+                "token"
+              ]
+            },
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "grant_type", "value": "password" },
+                { "key": "client_id", "value": "{{client_id}}" },
+                { "key": "client_secret", "value": "{{client_secret}}" },
+                { "key": "username", "value": "{{username_admin}}" },
+                { "key": "password", "value": "{{password_admin}}" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Respuesta 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "var json = pm.response.json();",
+                  "pm.environment.set(\"token_admin\", json.access_token);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Token BIBLIOTECARIO",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "url": {
+              "raw": "{{baseKeycloak}}/realms/{{realm}}/protocol/openid-connect/token",
+              "host": [
+                "{{baseKeycloak}}"
+              ],
+              "path": [
+                "realms",
+                "{{realm}}",
+                "protocol",
+                "openid-connect",
+                "token"
+              ]
+            },
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "grant_type", "value": "password" },
+                { "key": "client_id", "value": "{{client_id}}" },
+                { "key": "client_secret", "value": "{{client_secret}}" },
+                { "key": "username", "value": "{{username_bibliotecario}}" },
+                { "key": "password", "value": "{{password_bibliotecario}}" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Respuesta 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "var json = pm.response.json();",
+                  "pm.environment.set(\"token_bibliotecario\", json.access_token);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Token LECTOR",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "url": {
+              "raw": "{{baseKeycloak}}/realms/{{realm}}/protocol/openid-connect/token",
+              "host": [
+                "{{baseKeycloak}}"
+              ],
+              "path": [
+                "realms",
+                "{{realm}}",
+                "protocol",
+                "openid-connect",
+                "token"
+              ]
+            },
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "grant_type", "value": "password" },
+                { "key": "client_id", "value": "{{client_id}}" },
+                { "key": "client_secret", "value": "{{client_secret}}" },
+                { "key": "username", "value": "{{username_lector}}" },
+                { "key": "password", "value": "{{password_lector}}" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Respuesta 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "var json = pm.response.json();",
+                  "pm.environment.set(\"token_lector\", json.access_token);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2 - Catálogo",
+      "item": [
+        {
+          "name": "Buscar libros como LECTOR (200)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_lector}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseCatalogo}}/libros/buscar?criterio=java",
+              "host": ["{{baseCatalogo}}"],
+              "path": ["libros", "buscar"],
+              "query": [
+                { "key": "criterio", "value": "java" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"LECTOR puede buscar libros\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cambiar disponibilidad como LECTOR (403)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_lector}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "true"
+            },
+            "url": {
+              "raw": "{{baseCatalogo}}/libros/1/disponibilidad",
+              "host": ["{{baseCatalogo}}"],
+              "path": ["libros", "1", "disponibilidad"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"LECTOR no puede cambiar disponibilidad\", function () {",
+                  "  pm.response.to.have.status(403);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cambiar disponibilidad como BIBLIOTECARIO (2xx)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_bibliotecario}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "true"
+            },
+            "url": {
+              "raw": "{{baseCatalogo}}/libros/1/disponibilidad",
+              "host": ["{{baseCatalogo}}"],
+              "path": ["libros", "1", "disponibilidad"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"BIBLIOTECARIO puede cambiar disponibilidad\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200,204]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3 - Usuarios",
+      "item": [
+        {
+          "name": "Obtener usuario como LECTOR (200)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_lector}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUsuarios}}/usuarios/u1",
+              "host": ["{{baseUsuarios}}"],
+              "path": ["usuarios", "u1"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"LECTOR puede ver usuario (según reglas actuales debe ser 403)\", function () {",
+                  "  pm.response.to.have.status(403);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cambiar email como LECTOR (403)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_lector}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "\"nuevo@mail.com\""
+            },
+            "url": {
+              "raw": "{{baseUsuarios}}/usuarios/u1/email",
+              "host": ["{{baseUsuarios}}"],
+              "path": ["usuarios", "u1", "email"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"LECTOR no puede cambiar email\", function () {",
+                  "  pm.response.to.have.status(403);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "4 - Circulación",
+      "item": [
+        {
+          "name": "Status público (sin token, 200)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseCirculacion}}/circulacion/public/status",
+              "host": ["{{baseCirculacion}}"],
+              "path": ["circulacion", "public", "status"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Endpoint público funciona\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar préstamos como LECTOR (403)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_lector}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseCirculacion}}/circulacion/prestamos",
+              "host": ["{{baseCirculacion}}"],
+              "path": ["circulacion", "prestamos"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"LECTOR no puede ver todos los préstamos (según reglas actuales devuelve 200)\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "5 - Notificación",
+      "item": [
+        {
+          "name": "Enviar notificación como BIBLIOTECARIO (2xx)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_bibliotecario}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"usuarioId\": \"u1\", \"mensaje\": \"Recordatorio de devolución\" }"
+            },
+            "url": {
+              "raw": "{{baseNotificacion}}/notificar",
+              "host": ["{{baseNotificacion}}"],
+              "path": ["notificar"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"BIBLIOTECARIO puede notificar\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200,204]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+

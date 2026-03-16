@@ -33,10 +33,10 @@ Si tienes Docker instalado y quieres evitar instalar Keycloak a mano:
 # En la raíz del proyecto
 docker-compose up -d
 
-# Esperar unos 30-60 segundos. Admin Console: http://localhost:8080 (admin / admin)
+# Esperar unos 30-60 segundos. Admin Console: http://localhost:8080 (admin / administrador@2024)
 ```
 
-El realm **biblioteca** se importa automáticamente (roles, cliente `biblioteca-app`, usuarios admin/bibliotecario/lector). Si no se importa, configura el realm a mano según [docs/KEYCLOAK-SETUP.md](docs/KEYCLOAK-SETUP.md).
+El realm **gimnasio** se importa automáticamente (roles, cliente `biblioteca-app`, usuarios admin/bibliotecario/lector). Si no se importa, configura el realm a mano según [docs/KEYCLOAK-SETUP.md](docs/KEYCLOAK-SETUP.md).
 
 ### Opción B – Sin Docker (Keycloak instalado)
 
@@ -44,7 +44,7 @@ El realm **biblioteca** se importa automáticamente (roles, cliente `biblioteca-
 2. En una terminal, desde el directorio de Keycloak:  
    **Linux/Mac:** `bin/kc.sh start-dev`  
    **Windows:** `bin\kc.bat start-dev`
-3. Abre http://localhost:8080, inicia sesión (admin / admin) y crea el realm **biblioteca** siguiendo [docs/KEYCLOAK-SETUP.md](docs/KEYCLOAK-SETUP.md) (realm, cliente, roles, usuarios).
+3. Abre http://localhost:8080, inicia sesión (admin / administrador@2024) y crea el realm **gimnasio** siguiendo [docs/KEYCLOAK-SETUP.md](docs/KEYCLOAK-SETUP.md) (realm, cliente, roles, usuarios).
 
 #### Pantallas clave de configuración en Keycloak
 
@@ -114,39 +114,9 @@ Cada servicio expone:
 - **API REST** en el puerto indicado.
 - **Swagger UI** en `http://localhost:<puerto>/swagger-ui.html`.
 
-## 3. Obtener un token JWT
+3. Validar la implementación
 
-Para llamar a los endpoints protegidos necesitas un token de Keycloak.
-
-**Opción A – Postman / Insomnia / curl**
-
-- **URL:** `POST http://localhost:8080/realms/biblioteca/protocol/openid-connect/token`
-- **Headers:** `Content-Type: application/x-www-form-urlencoded`
-- **Body (x-www-form-urlencoded):**
-
-  | Clave        | Valor        |
-  |-------------|--------------|
-  | grant_type  | password     |
-  | client_id   | biblioteca-app |
-  | username    | admin        |
-  | password    | admin        |
-
-En la respuesta JSON copia el valor de **`access_token`**.
-
-**Opción B – curl**
-
-```bash
-curl -X POST "http://localhost:8080/realms/biblioteca/protocol/openid-connect/token" \
-  -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "grant_type=password" \
-  -d "client_id=biblioteca-app" \
-  -d "username=admin" \
-  -d "password=admin"
-```
-
-## 4. Validar la implementación
-
-### 4.1 Swagger UI con JWT
+### 3.1 Swagger UI con JWT
 
 1. Abre, por ejemplo, http://localhost:8082/swagger-ui.html (Catálogo).
 2. Clic en **Authorize**.
@@ -155,7 +125,7 @@ curl -X POST "http://localhost:8080/realms/biblioteca/protocol/openid-connect/to
 
 Repite en los otros puertos (8081, 8083, 8084) para los demás microservicios.
 
-### 4.2 Llamada con curl
+### 3.2 Llamada con curl
 
 ```bash
 # Sustituye TOKEN por el access_token obtenido en el paso 3.
@@ -167,7 +137,7 @@ curl -H "Authorization: Bearer TOKEN" "http://localhost:8082/libros/buscar?crite
 curl -H "Authorization: Bearer TOKEN" "http://localhost:8081/usuarios/u1"
 ```
 
-### 4.3 Comportamiento esperado
+### 3.3 Comportamiento esperado
 
 | Prueba                    | Resultado esperado |
 |---------------------------|--------------------|
@@ -178,12 +148,20 @@ curl -H "Authorization: Bearer TOKEN" "http://localhost:8081/usuarios/u1"
 
 Más casos en [docs/PRUEBAS-SEGURIDAD.md](docs/PRUEBAS-SEGURIDAD.md).
 
-## 5. Documentación adicional
+#### Ejecución de pruebas automatizadas con Newman
+
+Ejemplo de salida de las pruebas de seguridad ejecutadas con Newman:
+
+![Resultados de pruebas Newman (parte 1)](docs/Pruebas1.png)
+
+![Resultados de pruebas Newman (parte 2)](docs/Pruebas2.png)
+
+## 4. Documentación adicional
 
 - [docs/KEYCLOAK-SETUP.md](docs/KEYCLOAK-SETUP.md) – Explicación del realm y configuración manual de Keycloak.
 - [docs/PRUEBAS-SEGURIDAD.md](docs/PRUEBAS-SEGURIDAD.md) – Pruebas de seguridad (token válido, inválido, roles).
 
-## 6. Detener todo
+## 5. Detener todo
 
 - **Keycloak con Docker:** `docker-compose down`
 - **Keycloak sin Docker:** Ctrl+C en la terminal donde ejecutaste `kc.sh start-dev` (o cierra el proceso).
